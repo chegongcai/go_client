@@ -188,10 +188,12 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 		}
 		//printf data  //len([]rune(buf))-27
 		//send data
+		/*
+			buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
+			fmt.Println("send data: ", buf)
+			_, err = conn.Write([]byte(buf))
+		*/
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		fmt.Println("send data: ", buf)
-		_, err = conn.Write([]byte(buf))
-
 		_, client_err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -221,6 +223,11 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 		}
 		fmt.Println("send data: ", buf)
 		_, err = conn.Write([]byte(buf))
+		break
+
+	case "ACK^LOCA":
+		fmt.Println("get data from go server and then send to device")
+		_, err = conn.Write([]byte(rev_buf))
 		break
 	}
 	if err != nil {
