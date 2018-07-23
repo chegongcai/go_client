@@ -77,6 +77,11 @@ func main() {
 		if err != nil {
 			continue
 		}
+
+		client_conn, client_err = listener.Accept()
+		if client_err != nil {
+			continue
+		}
 		go handleClient(conn)
 
 	}
@@ -92,9 +97,10 @@ func checkErr(err error) {
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
-	var buf [1024]byte
+	var buf, client_buf [1024]byte
 	for {
 		n, err := conn.Read(buf[0:])
+		client_n, _ := client_conn.Read((client_buf[0:]))
 		if err != nil {
 			return
 		}
@@ -102,7 +108,9 @@ func handleClient(conn net.Conn) {
 		fmt.Println("****************************************************************************************")
 		fmt.Println("client ip: ", rAddr.String())
 		fmt.Println("time: ", GetTimeStamp())
-		fmt.Println("rev data: ", string(buf[0:n]))
+		fmt.Println("rev data from device: ", string(buf[0:n]))
+		fmt.Println("rev data from server: ", string(client_buf[0:client_n]))
+		fmt.Println()
 		if buf[n-1] != '$' {
 			return
 		}
