@@ -78,6 +78,13 @@ func main() {
 		if err != nil {
 			continue
 		}
+
+		var buf [1024]byte
+		n, err := client_conn.Read(buf[0:])
+		if n != 0 {
+			fmt.Println("time: ", GetTimeStamp())
+			fmt.Println("rev data from server: ", string(buf[0:n]))
+		}
 		go handleClient(conn)
 	}
 }
