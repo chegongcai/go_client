@@ -66,20 +66,20 @@ func main() {
 
 	//client
 	addr := "182.254.185.142:8080"
-	if server_test == 0 {
-		conn, err = net.Dial("tcp", addr)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	for {
-		conn, err = listener.Accept()
-		if err != nil {
-			continue
+		if server_test == 0 {
+			send_test = 1
+			conn, err = net.Dial("tcp", addr)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			conn, err = listener.Accept()
+			if err != nil {
+				continue
+			}
+			go handleClient(conn)
 		}
-		go handleClient(conn)
-
 	}
 }
 
