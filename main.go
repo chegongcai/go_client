@@ -48,6 +48,9 @@ import (
 	"time"
 )
 
+var client_conn net.Conn
+var client_err error
+
 //182.254.185.142  8080
 const version = 0 // 0 for debug
 var SerialNum int
@@ -55,7 +58,6 @@ var send_test int = 0
 var server_test int = 0
 
 func main() {
-	var conn net.Conn
 	//server
 	service := ":8080"
 	//testbuf()
@@ -66,20 +68,17 @@ func main() {
 
 	//client
 	addr := "182.254.185.142:8080"
+	client_conn, client_err = net.Dial("tcp", addr)
+	if client_err != nil {
+		log.Fatal(client_err)
+	}
+
 	for {
-		if server_test == 0 {
-			server_test = 1
-			conn, err = net.Dial("tcp", addr)
-			if err != nil {
-				log.Fatal(err)
-			}
-		} else {
-			conn, err = listener.Accept()
-			if err != nil {
-				continue
-			}
-			go handleClient(conn)
+		conn, err := listener.Accept()
+		if err != nil {
+			continue
 		}
+		go handleClient(conn)
 	}
 }
 
@@ -194,8 +193,9 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 			fmt.Println("send data: ", buf)
 			_, err = conn.Write([]byte(buf))
 		*/
+		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		_, err = conn.Write([]byte(buf)) //send to server
+		_, err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
 		//parse data
