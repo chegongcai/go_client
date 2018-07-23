@@ -48,15 +48,14 @@ import (
 	"time"
 )
 
-var client_conn net.Conn
-var client_err error
-
 //182.254.185.142  8080
 const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
+var server_test int = 0
 
 func main() {
+	var conn net.Conn
 	//server
 	service := ":8080"
 	//testbuf()
@@ -67,19 +66,16 @@ func main() {
 
 	//client
 	addr := "182.254.185.142:8080"
-	client_conn, client_err = net.Dial("tcp", addr)
-	if err != nil {
-		log.Fatal(err)
+	if server_test == 0 {
+		conn, err = net.Dial("tcp", addr)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	for {
-		conn, err := listener.Accept()
+		conn, err = listener.Accept()
 		if err != nil {
-			continue
-		}
-
-		client_conn, client_err = listener.Accept()
-		if client_err != nil {
 			continue
 		}
 		go handleClient(conn)
@@ -97,10 +93,9 @@ func checkErr(err error) {
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
-	var buf, client_buf [1024]byte
+	var buf [1024]byte
 	for {
 		n, err := conn.Read(buf[0:])
-		client_n, _ := client_conn.Read((client_buf[0:]))
 		if err != nil {
 			return
 		}
@@ -108,9 +103,7 @@ func handleClient(conn net.Conn) {
 		fmt.Println("****************************************************************************************")
 		fmt.Println("client ip: ", rAddr.String())
 		fmt.Println("time: ", GetTimeStamp())
-		fmt.Println("rev data from device: ", string(buf[0:n]))
-		fmt.Println("rev data from server: ", string(client_buf[0:client_n]))
-		fmt.Println()
+		fmt.Println("rev data: ", string(buf[0:n]))
 		if buf[n-1] != '$' {
 			return
 		}
@@ -202,7 +195,7 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 			_, err = conn.Write([]byte(buf))
 		*/
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		_, client_err = client_conn.Write([]byte(buf)) //send to server
+		_, err = conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
 		//parse data
@@ -240,9 +233,6 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 	}
 	if err != nil {
 		return
-	}
-	if client_err != nil {
-		log.Fatal(err)
 	}
 
 	if send_test == 0 {
