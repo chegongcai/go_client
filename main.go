@@ -68,7 +68,7 @@ func main() {
 	addr := "182.254.185.142:8080"
 	for {
 		if server_test == 0 {
-			send_test = 1
+			server_test = 1
 			conn, err = net.Dial("tcp", addr)
 			if err != nil {
 				log.Fatal(err)
