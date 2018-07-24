@@ -61,7 +61,11 @@ func sender(conn net.Conn) {
 			fmt.Println("waiting server back msg error: ", err)
 			return
 		}
-		fmt.Println(conn.RemoteAddr().String(), "receive data from server: ", string(buffer[:n]))
+		fmt.Println("****************************************************************************************")
+		fmt.Println("client ip: ", conn.RemoteAddr().String())
+		fmt.Println("time: ", GetTimeStamp())
+		fmt.Println("receive data from server: ", string(buffer[:n]))
+		fmt.Println("****************************************************************************************")
 	}
 }
 
@@ -162,11 +166,6 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 			fmt.Println(LBS_DATA)
 			break
 		}
-		//printf data  //len([]rune(buf))-27
-		//send data
-		//buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		//fmt.Println("send data: ", buf)
-		//_, err = conn.Write([]byte(buf))
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
 		_, err = client_conn.Write([]byte(buf)) //send to server
