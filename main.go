@@ -57,7 +57,7 @@ var SerialNum int
 var send_test int = 0
 
 func main() {
-	var buf [1024]byte
+	//var buf [1024]byte
 	//server
 	service := ":8080"
 	//testbuf()
@@ -76,22 +76,23 @@ func main() {
 
 	for {
 		conn, err := listener.Accept()
-		num, err_server := client_conn.Read(buf[0:])
+		//num, err_server := client_conn.Read(buf[0:])
 
-		fmt.Println(err, err_server)
-		if err != nil && err_server != nil {
+		fmt.Println(err)
+		if err != nil { //&& err_server != nil {
 			continue
 		}
 
-		if err == nil {
-			go handleClient(conn)
-		}
-		if err_server == nil {
-			var buf [1024]byte
-			fmt.Println("time: ", GetTimeStamp())
-			fmt.Println("rev data from server: ", string(buf[0:num]))
-		}
-
+		//if err == nil {
+		go handleClient(conn)
+		//}
+		/*
+			if err_server == nil {
+				var buf [1024]byte
+				fmt.Println("time: ", GetTimeStamp())
+				fmt.Println("rev data from server: ", string(buf[0:num]))
+			}
+		*/
 	}
 }
 
