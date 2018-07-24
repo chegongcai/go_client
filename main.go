@@ -38,7 +38,7 @@ func main() {
 package main
 
 import (
-	"bufio"
+	//	"bufio"
 	"chetest/BDYString"
 	"fmt"
 	"net"
@@ -76,8 +76,8 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 
-		message, _ := bufio.NewReader(client_conn).ReadString('\n')
-		fmt.Print("Message from server: " + message)
+		//message, _ := bufio.NewReader(client_conn).ReadString('\n')
+		//fmt.Print("Message from server: " + message)
 
 		if err != nil {
 			continue
