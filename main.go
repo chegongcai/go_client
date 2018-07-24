@@ -92,6 +92,7 @@ func checkErr(err error) {
 	}
 }
 func handleServerData() {
+	fmt.Println("handleServerData")
 	for {
 		message, server_err := bufio.NewReader(client_conn).ReadString('\n')
 		fmt.Println(server_err)
