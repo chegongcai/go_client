@@ -214,15 +214,14 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	var err error
-	var arr_buf, data_buf, comand_buf []string
+	var arr_buf, data_buf []string
 
-	arr_buf = strings.Split(rev_buf, "#")                //先分割#
-	data_buf = strings.Split(string(arr_buf[4]), ";")    //分割;
-	comand_buf = strings.Split(string(data_buf[0]), ":") //分割;
+	arr_buf = strings.Split(rev_buf, "#")             //先分割#
+	data_buf = strings.Split(string(arr_buf[4]), ",") //分割;
 
-	fmt.Println(comand_buf[0])
+	fmt.Println(data_buf[0])
 
-	switch comand_buf[0] {
+	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
 		_, err = device_conn.Write([]byte(rev_buf))
