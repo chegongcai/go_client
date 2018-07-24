@@ -76,11 +76,10 @@ func main() {
 
 	for {
 		conn, err := listener.Accept()
-		num, _ := client_conn.Read(buf[0:])
+		num, server_err := client_conn.Read(buf[0:])
 
-		fmt.Println(err)
-		fmt.Println(num)
-		if err != nil { //&& err_server != nil {
+		fmt.Println(err, server_err, num)
+		if err != nil && server_err != nil {
 			continue
 		}
 
