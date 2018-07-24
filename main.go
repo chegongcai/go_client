@@ -80,15 +80,8 @@ func main() {
 		if err != nil {
 			continue
 		}
+		go handleServerData()
 		go handleClient(conn)
-	}
-	for {
-		message, server_err := bufio.NewReader(client_conn).ReadString('\n')
-		fmt.Println(server_err)
-		if server_err != nil {
-			continue
-		}
-		fmt.Print("Message from server: " + message)
 	}
 }
 
@@ -98,7 +91,16 @@ func checkErr(err error) {
 		os.Exit(1)
 	}
 }
-
+func handleServerData() {
+	for {
+		message, server_err := bufio.NewReader(client_conn).ReadString('\n')
+		fmt.Println(server_err)
+		if server_err != nil {
+			return
+		}
+		fmt.Print("Message from server: " + message)
+	}
+}
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
