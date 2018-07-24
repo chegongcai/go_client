@@ -1,44 +1,6 @@
-/*
 package main
 
 import (
-	"fmt"
-	"io"
-	"log"
-	"net"
-)
-
-func main() {
-	addr := "182.254.185.142:8080"
-	conn, err := net.Dial("tcp", addr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("server IP：", conn.RemoteAddr().String())
-
-	fmt.Printf("client IP：%v\n", conn.LocalAddr())
-
-	n, err := conn.Write([]byte("Hello Server"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("send lenght:", n)
-
-	buf := make([]byte, 1024) //定义一个切片的长度是1024。
-
-	n, err = conn.Read(buf) //send lenght
-
-	if err != nil && err != io.EOF {
-		log.Fatal(err)
-	}
-	fmt.Println(string(buf[:n]))
-	conn.Close()
-}
-*/
-package main
-
-import (
-	"bufio"
 	"chetest/BDYString"
 	"fmt"
 	"net"
@@ -57,24 +19,6 @@ var SerialNum int
 var send_test int = 0
 
 func main() {
-
-	// connect to this socket
-	conn, _ := net.Dial("tcp", "182.254.185.142:8080")
-	for {
-		// read in input from stdin
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Text to send: ")
-		text, _ := reader.ReadString('\n')
-		// send to socket
-		fmt.Fprintf(conn, text+"\n")
-		// listen for reply
-		message, _ := bufio.NewReader(conn).ReadString('\n')
-		fmt.Print("Message from server: " + message)
-	}
-}
-
-/*
-func main() {
 	//server
 	service := ":8080"
 	//testbuf()
@@ -84,27 +28,24 @@ func main() {
 	checkErr(err)
 
 	//client
-	server_addr := "182.254.185.142:8080"
-
-	client_conn, client_err = net.Dial("tcp", server_addr)
-	if client_err != nil {
-		checkErr(client_err)
-	}
+	server := "182.254.185.142:8080"
+	server_addr, client_err := net.ResolveTCPAddr("tcp4", server)
+	checkErr(client_err)
+	client_conn, client_err := net.DialTCP("tcp", nil, server_addr)
+	checkErr(client_err)
+	go sender(client_conn)
 
 	for {
 		conn, err := listener.Accept()
-		fmt.Println(err)
 
-		_, server_err := bufio.NewReader(client_conn).ReadString('\n')
-		fmt.Println(server_err)
-
-		if err != nil && server_err != nil{
+		fmt.Println(conn, err)
+		if err != nil {
 			continue
 		}
 		go handleClient(conn)
 	}
 }
-*/
+
 func checkErr(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
@@ -112,17 +53,18 @@ func checkErr(err error) {
 	}
 }
 
-func handleServerData() {
-	fmt.Println("handleServerData")
+func sender(conn net.Conn) {
+	buffer := make([]byte, 2048)
 	for {
-		message, server_err := bufio.NewReader(client_conn).ReadString('\n')
-		fmt.Println(server_err)
-		if server_err != nil {
+		n, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println("waiting server back msg error: ", err)
 			return
 		}
-		fmt.Print("Message from server: " + message)
+		fmt.Println(conn.RemoteAddr().String(), "receive data from server: ", string(buffer[:n]))
 	}
 }
+
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
@@ -222,11 +164,9 @@ func ParseProtocol(rev_buf string, conn net.Conn) {
 		}
 		//printf data  //len([]rune(buf))-27
 		//send data
-		/*
-			buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-			fmt.Println("send data: ", buf)
-			_, err = conn.Write([]byte(buf))
-		*/
+		//buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
+		//fmt.Println("send data: ", buf)
+		//_, err = conn.Write([]byte(buf))
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
 		_, err = client_conn.Write([]byte(buf)) //send to server
