@@ -38,9 +38,9 @@ func main() {
 package main
 
 import (
+	"bufio"
 	"chetest/BDYString"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"strconv"
@@ -57,7 +57,6 @@ var SerialNum int
 var send_test int = 0
 
 func main() {
-	var buf [1024]byte
 	//server
 	service := ":8080"
 	//testbuf()
@@ -71,28 +70,20 @@ func main() {
 
 	client_conn, client_err = net.Dial("tcp", server_addr)
 	if client_err != nil {
-		log.Fatal(client_err)
+		checkErr(client_err)
 	}
 
 	for {
 		conn, err := listener.Accept()
-		num, server_err := client_conn.Read(buf[0:])
 
-		fmt.Println(err, server_err, num)
-		if err != nil && server_err != nil {
+		message, _ := bufio.NewReader(client_conn).ReadString('\n')
+		fmt.Print("Message from server: " + message)
+
+		if err != nil {
 			continue
 		}
-
-		//if err == nil {
 		go handleClient(conn)
-		//}
-		/*
-			if err_server == nil {
-				var buf [1024]byte
-				fmt.Println("time: ", GetTimeStamp())
-				fmt.Println("rev data from server: ", string(buf[0:num]))
-			}
-		*/
+
 	}
 }
 
