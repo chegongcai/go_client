@@ -37,8 +37,6 @@ func main() {
 
 	for {
 		conn, err := listener.Accept()
-
-		fmt.Println(conn, err)
 		if err != nil {
 			continue
 		}
