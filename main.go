@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//var client_conn, device_conn net.Conn
+var client_conn, device_conn net.Conn
 
 //182.254.185.142  8080
 const version = 0 // 0 for debug
@@ -30,23 +30,17 @@ func main() {
 	server := "182.254.185.142:8080"
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
 	checkErr(err)
-	client_conn, err := net.DialTCP("tcp", nil, server_addr)
+	client_conn, err = net.DialTCP("tcp", nil, server_addr)
 	checkErr(err)
+	go ClientAndServerConn(client_conn)
 
-	device_conn, err := listener.Accept()
-	checkErr(err)
-
-	go ClientAndServerConn(client_conn, device_conn)
-	go DeviceAndServerConn(device_conn, client_conn)
-	/*
-		for {
-			device_conn, err = listener.Accept()
-			if err != nil {
-				continue
-			}
-			go DeviceAndServerConn(device_conn)
+	for {
+		device_conn, err = listener.Accept()
+		if err != nil {
+			continue
 		}
-	*/
+		go DeviceAndServerConn(device_conn)
+	}
 }
 
 func checkErr(err error) {
@@ -56,37 +50,36 @@ func checkErr(err error) {
 	}
 }
 
-func ClientAndServerConn(c_conn net.Conn, d_conn net.Conn) {
-	defer c_conn.Close()
+func ClientAndServerConn(conn net.Conn) {
 	buffer := make([]byte, 2048)
 	for {
-		n, err := c_conn.Read(buffer)
+		n, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Println("waiting server back msg error: ", err)
 			return
 		}
 		fmt.Println("****************************************************************************************")
-		fmt.Println("client ip: ", c_conn.RemoteAddr().String())
+		fmt.Println("client ip: ", conn.RemoteAddr().String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("receive data from server: ", string(buffer[:n]))
 		if buffer[n-1] != '$' {
 			return
 		}
-		rev_buf := string(buffer[0 : n-1])           //delete the tail #
-		ParseServerProtocol(rev_buf, c_conn, d_conn) //do protocol parse
+		rev_buf := string(buffer[0 : n-1]) //delete the tail #
+		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
 }
 
-func DeviceAndServerConn(d_conn net.Conn, c_conn net.Conn) {
-	defer d_conn.Close()
+func DeviceAndServerConn(conn net.Conn) {
+	defer conn.Close()
 
 	var buf [1024]byte
 	for {
-		n, err := d_conn.Read(buf[0:])
+		n, err := conn.Read(buf[0:])
 		if err != nil {
 			return
 		}
-		rAddr := d_conn.RemoteAddr()
+		rAddr := conn.RemoteAddr()
 		fmt.Println("****************************************************************************************")
 		fmt.Println("client ip: ", rAddr.String())
 		fmt.Println("time: ", GetTimeStamp())
@@ -94,8 +87,8 @@ func DeviceAndServerConn(d_conn net.Conn, c_conn net.Conn) {
 		if buf[n-1] != '$' {
 			return
 		}
-		rev_buf := string(buf[0 : n-1])              //delete the tail #
-		ParseDeviceProtocol(rev_buf, d_conn, c_conn) //do protocol parse
+		rev_buf := string(buf[0 : n-1])    //delete the tail #
+		ParseDeviceProtocol(rev_buf, conn) //do protocol parse
 	}
 }
 
@@ -129,7 +122,7 @@ func testbuf() {
 	fmt.Println(comand_buf[1])
 }
 
-func ParseDeviceProtocol(rev_buf string, d_conn net.Conn, c_conn net.Conn) {
+func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	var err error
 	var arr_buf, data_buf, comand_buf []string
 
@@ -174,7 +167,7 @@ func ParseDeviceProtocol(rev_buf string, d_conn net.Conn, c_conn net.Conn) {
 		}
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		_, err = c_conn.Write([]byte(buf)) //send to server
+		_, err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
 		//parse data
@@ -190,7 +183,7 @@ func ParseDeviceProtocol(rev_buf string, d_conn net.Conn, c_conn net.Conn) {
 		//send data  //22.529793,113.952744
 		buf := fmt.Sprintf("S168#%s#%s#0028#ACK^B2G,22.529793,113.952744$", imei, serial_num)
 		fmt.Println("send data: ", buf)
-		_, err = d_conn.Write([]byte(buf))
+		_, err = conn.Write([]byte(buf))
 		break
 
 	case "SYNC":
@@ -202,7 +195,7 @@ func ParseDeviceProtocol(rev_buf string, d_conn net.Conn, c_conn net.Conn) {
 			buf = fmt.Sprintf("S168#%s#%s#0009#ACK^SYNC,$", imei, serial_num)
 		}
 		fmt.Println("send data: ", buf)
-		_, err = d_conn.Write([]byte(buf))
+		_, err = conn.Write([]byte(buf))
 		break
 	}
 	if err != nil {
@@ -214,12 +207,12 @@ func ParseDeviceProtocol(rev_buf string, d_conn net.Conn, c_conn net.Conn) {
 		SerialNum++
 		buf := fmt.Sprintf("S168#%s#%s#0009#GSENSOR,1$", imei, BDYString.Int2HexString(SerialNum))
 		fmt.Println("send data: ", buf)
-		_, err = d_conn.Write([]byte(buf))
+		_, err = conn.Write([]byte(buf))
 	}
 	fmt.Println("****************************************************************************************")
 }
 
-func ParseServerProtocol(rev_buf string, conn net.Conn, d_conn net.Conn) {
+func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	var err error
 	var arr_buf, data_buf []string
 
@@ -231,7 +224,7 @@ func ParseServerProtocol(rev_buf string, conn net.Conn, d_conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		_, err = d_conn.Write([]byte(rev_buf))
+		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
 	fmt.Println("****************************************************************************************")
