@@ -55,7 +55,6 @@ var client_err error
 const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
-var server_test int = 0
 
 func main() {
 	//server
@@ -67,18 +66,39 @@ func main() {
 	checkErr(err)
 
 	//client
-	addr := "182.254.185.142:8080"
-	client_conn, client_err = net.Dial("tcp", addr)
+	server_addr := "182.254.185.142:8080"
+
+	client_conn, client_err = net.Dial("tcp", server_addr)
 	if client_err != nil {
 		log.Fatal(client_err)
 	}
+	tcp_sever_Addr, client_err := net.ResolveTCPAddr("tcp4", server_addr)
+	checkErr(client_err)
+	listener_server, client_err := net.ListenTCP("tcp", tcp_sever_Addr)
+	checkErr(client_err)
 
 	for {
 		conn, err := listener.Accept()
-		if err != nil {
+		_, err_server := listener_server.Accept()
+
+		if err != nil && err_server != nil {
 			continue
 		}
-		go handleClient(conn)
+
+		if err == nil {
+			go handleClient(conn)
+		}
+		if err_server == nil {
+			var buf [1024]byte
+			for {
+				n, err := client_conn.Read(buf[0:])
+				if err != nil {
+					return
+				}
+				fmt.Println("time: ", GetTimeStamp())
+				fmt.Println("rev data from server: ", string(buf[0:n]))
+			}
+		}
 	}
 }
 
