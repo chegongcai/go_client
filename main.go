@@ -57,6 +57,24 @@ var SerialNum int
 var send_test int = 0
 
 func main() {
+
+	// connect to this socket
+	conn, _ := net.Dial("tcp", "182.254.185.142:8080")
+	for {
+		// read in input from stdin
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Text to send: ")
+		text, _ := reader.ReadString('\n')
+		// send to socket
+		fmt.Fprintf(conn, text+"\n")
+		// listen for reply
+		message, _ := bufio.NewReader(conn).ReadString('\n')
+		fmt.Print("Message from server: " + message)
+	}
+}
+
+/*
+func main() {
 	//server
 	service := ":8080"
 	//testbuf()
@@ -77,20 +95,23 @@ func main() {
 		conn, err := listener.Accept()
 		fmt.Println(err)
 
-		if err != nil {
+		_, server_err := bufio.NewReader(client_conn).ReadString('\n')
+		fmt.Println(server_err)
+
+		if err != nil && server_err != nil{
 			continue
 		}
-		go handleServerData()
 		go handleClient(conn)
 	}
 }
-
+*/
 func checkErr(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
 		os.Exit(1)
 	}
 }
+
 func handleServerData() {
 	fmt.Println("handleServerData")
 	for {
