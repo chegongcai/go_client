@@ -57,7 +57,7 @@ var SerialNum int
 var send_test int = 0
 
 func main() {
-	//var buf [1024]byte
+	var buf [1024]byte
 	//server
 	service := ":8080"
 	//testbuf()
@@ -76,9 +76,10 @@ func main() {
 
 	for {
 		conn, err := listener.Accept()
-		//num, err_server := client_conn.Read(buf[0:])
+		num, _ := client_conn.Read(buf[0:])
 
 		fmt.Println(err)
+		fmt.Println(num)
 		if err != nil { //&& err_server != nil {
 			continue
 		}
