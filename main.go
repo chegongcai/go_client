@@ -29,10 +29,10 @@ func main() {
 
 	//client
 	server := "182.254.185.142:8080"
-	server_addr, client_err := net.ResolveTCPAddr("tcp4", server)
-	checkErr(client_err)
-	client_conn, client_err := net.DialTCP("tcp", nil, server_addr)
-	checkErr(client_err)
+	server_addr, err := net.ResolveTCPAddr("tcp4", server)
+	checkErr(err)
+	client_conn, err = net.DialTCP("tcp", nil, server_addr)
+	checkErr(err)
 	go sender(client_conn)
 
 	for {
