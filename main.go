@@ -78,6 +78,7 @@ func main() {
 		conn, err := listener.Accept()
 		num, err_server := client_conn.Read(buf[0:])
 
+		fmt.Println(err, err_server)
 		if err != nil && err_server != nil {
 			continue
 		}
