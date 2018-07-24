@@ -167,6 +167,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		}
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
+		fmt.Println(client_conn)
 		_, err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -224,6 +225,7 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
+		fmt.Println(device_conn)
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
