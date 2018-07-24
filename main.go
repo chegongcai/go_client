@@ -12,11 +12,6 @@ import (
 
 var client_conn, device_conn net.Conn
 
-type conn_info struct {
-	IP_port string
-	conn    net.Conn
-}
-
 //182.254.185.142  8080
 const version = 0 // 0 for debug
 var SerialNum int
@@ -74,6 +69,16 @@ func ClientAndServerConn(conn net.Conn) {
 		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
 }
+
+/*
+func SetIpAdrr(str string) {
+	device_conn.RemoteAddr().String() = string
+}
+
+func GetIpAdrr() string {
+	return device_conn.RemoteAddr().String()
+}
+*/
 
 func DeviceAndServerConn(conn net.Conn) {
 	defer conn.Close()
@@ -172,7 +177,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		}
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		fmt.Println(&client_conn)
+		fmt.Println("server ip: ", client_conn.RemoteAddr().String())
 		_, err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -230,7 +235,7 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		fmt.Println(&device_conn)
+		fmt.Println("server ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
