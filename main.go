@@ -59,7 +59,7 @@ func ClientAndServerConn(conn net.Conn) {
 			return
 		}
 		fmt.Println("****************************************************************************************")
-		fmt.Println("server ip: ", conn.RemoteAddr().String())
+		fmt.Println("server ip: ", conn.LocalAddr().String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("receive data from server: ", string(buffer[:n]))
 		if buffer[n-1] != '$' {
