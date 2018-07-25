@@ -70,15 +70,13 @@ func ClientAndServerConn(conn net.Conn) {
 	}
 }
 
-/*
 func SetIpAdrr(str string) {
-	device_conn.RemoteAddr().String() = string
+
 }
 
 func GetIpAdrr() string {
 	return device_conn.RemoteAddr().String()
 }
-*/
 
 func DeviceAndServerConn(conn net.Conn) {
 	defer conn.Close()
@@ -177,7 +175,6 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		}
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
-		fmt.Println("server ip: ", client_conn.RemoteAddr().String())
 		_, err = client_conn.Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -235,7 +232,8 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		fmt.Println("server ip: ", device_conn.RemoteAddr().String())
+		//fmt.Println("device ip: ", device_conn.RemoteAddr().String())
+		fmt.Println("device ip: ", GetIpAdrr())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
@@ -245,3 +243,33 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	}
 	fmt.Println("****************************************************************************************")
 }
+
+/*
+package main
+
+import (
+	"fmt"
+)
+
+type Abser interface {
+	Abs() string
+}
+
+func main() {
+	var a Abser
+	str := "hello"
+	v := Vertex{str}
+
+	a = &v // a *Vertex 实现了 Abser
+
+	fmt.Println(a.Abs())
+}
+
+type Vertex struct {
+	str string
+}
+
+func (v *Vertex) Abs() string {
+	return v.str
+}
+*/
