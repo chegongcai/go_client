@@ -27,14 +27,7 @@ func main() {
 	checkErr(err)
 
 	//client
-	/*
-		server := "182.254.185.142:8080"
-		server_addr, err := net.ResolveTCPAddr("tcp4", server)
-		checkErr(err)
-		client_conn, err = net.DialTCP("tcp", nil, server_addr)
-		checkErr(err)
-		go ClientAndServerConn(client_conn)
-	*/
+	ClientConnetToServer()
 	for {
 		device_conn, err = listener.Accept()
 		if err != nil {
