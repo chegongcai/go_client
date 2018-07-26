@@ -29,11 +29,11 @@ func main() {
 	//client
 	ClientConnetToServer()
 	for {
-		device_conn, err = listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			continue
 		}
-		go DeviceAndServerConn(device_conn)
+		go DeviceAndServerConn(conn)
 	}
 }
 
@@ -217,6 +217,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		_, err = conn.Write([]byte(buf))
 	}
 	fmt.Println("****************************************************************************************")
+	device_conn = conn
 }
 
 func ParseServerProtocol(rev_buf string, conn net.Conn) {
