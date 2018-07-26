@@ -190,6 +190,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 		//send data  //22.529793,113.952744
 		buf := fmt.Sprintf("S168#%s#%s#0028#ACK^B2G,22.529793,113.952744$", imei, serial_num)
+		fmt.Println("device ip: ", GetIpAdrr())
 		fmt.Println("send data: ", buf)
 		_, err = conn.Write([]byte(buf))
 		break
@@ -247,29 +248,75 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 /*
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type Abser interface {
-	Abs() string
+type temp interface {
+	String() string
+}
+
+type goche interface {
+	test() temp
 }
 
 func main() {
-	var a Abser
-	str := "hello"
-	v := Vertex{str}
-
-	a = &v // a *Vertex 实现了 Abser
-
-	fmt.Println(a.Abs())
+	var a goche
+	a = &kine{}
+	tmp := a.test()
+	v := tmp.(*flag)
+	v.str = "Hello"
+	fmt.Println(v.String())
 }
 
-type Vertex struct {
+type flag struct {
 	str string
 }
 
-func (v *Vertex) Abs() string {
+type kine struct {
+}
+
+func (v *flag) String() string {
 	return v.str
+}
+
+func (v *kine) test() temp {
+	return &flag{}
+}
+*/
+/*
+package main
+
+import "fmt"
+
+type goche interface {
+	temp() temp
+}
+
+type temp interface {
+	String() string
+}
+
+type A struct {
+}
+
+type B struct {
+	str string
+}
+
+func (a *A) temp() temp {
+	return &B{}
+}
+
+func (b *B) String() string {
+	return b.str
+}
+
+func main() {
+	var a goche
+	a = &A{}
+	tmp := a.temp()
+	if v, ok := tmp.(*B); ok {
+		v.str = "Hello"
+		fmt.Println(v.String())
+	}
 }
 */
