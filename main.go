@@ -172,7 +172,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 			break
 		}
 		fmt.Println("send data to server")
-		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
+		buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
 		_, err = ClientConnetToServer().Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -241,79 +241,3 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	}
 	fmt.Println("****************************************************************************************")
 }
-
-/*
-package main
-
-import "fmt"
-
-type temp interface {
-	String() string
-}
-
-type goche interface {
-	test() temp
-}
-
-func main() {
-	var a goche
-	a = &kine{}
-	tmp := a.test()
-	v := tmp.(*flag)
-	v.str = "Hello"
-	fmt.Println(v.String())
-}
-
-type flag struct {
-	str string
-}
-
-type kine struct {
-}
-
-func (v *flag) String() string {
-	return v.str
-}
-
-func (v *kine) test() temp {
-	return &flag{}
-}
-*/
-/*
-package main
-
-import "fmt"
-
-type goche interface {
-	temp() temp
-}
-
-type temp interface {
-	String() string
-}
-
-type A struct {
-}
-
-type B struct {
-	str string
-}
-
-func (a *A) temp() temp {
-	return &B{}
-}
-
-func (b *B) String() string {
-	return b.str
-}
-
-func main() {
-	var a goche
-	a = &A{}
-	tmp := a.temp()
-	if v, ok := tmp.(*B); ok {
-		v.str = "Hello"
-		fmt.Println(v.String())
-	}
-}
-*/
