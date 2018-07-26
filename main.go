@@ -87,7 +87,7 @@ func DeviceAndServerConn(conn net.Conn) {
 		}
 		rAddr := conn.RemoteAddr()
 		fmt.Println("****************************************************************************************")
-		fmt.Println("client ip: ", rAddr.String())
+		fmt.Println("device ip: ", rAddr.String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("rev data: ", string(buf[0:n]))
 		if buf[n-1] != '$' {
@@ -209,7 +209,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		return
 	}
 
-	if send_test == 0 {
+	if send_test == 1 {
 		send_test = 1
 		SerialNum++
 		buf := fmt.Sprintf("S168#%s#%s#0009#GSENSOR,1$", imei, BDYString.Int2HexString(SerialNum))
