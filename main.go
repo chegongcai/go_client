@@ -37,6 +37,9 @@ func main() {
 	}
 }
 
+func SetGoServer() {
+
+}
 func ClientConnetToServer() net.Conn {
 	server := "182.254.185.142:8080"
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
@@ -71,14 +74,6 @@ func ClientAndServerConn(conn net.Conn) {
 		rev_buf := string(buffer[0 : n-1]) //delete the tail #
 		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
-}
-
-func SetIpAdrr(str string) {
-
-}
-
-func GetIpAdrr() string {
-	return device_conn.RemoteAddr().String()
 }
 
 func DeviceAndServerConn(conn net.Conn) {
@@ -193,7 +188,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 		//send data  //22.529793,113.952744
 		buf := fmt.Sprintf("S168#%s#%s#0028#ACK^B2G,22.529793,113.952744$", imei, serial_num)
-		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
+		fmt.Println("device ip: ", conn.RemoteAddr().String())
 		fmt.Println("send data: ", buf)
 		_, err = conn.Write([]byte(buf))
 		break
@@ -236,8 +231,7 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		//fmt.Println("device ip: ", device_conn.RemoteAddr().String())
-		fmt.Println("device ip: ", GetIpAdrr())
+		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
