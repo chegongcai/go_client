@@ -224,13 +224,14 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	var arr_buf, data_buf []string
 
 	arr_buf = strings.Split(rev_buf, "#")             //先分割#
-	data_buf = strings.Split(string(arr_buf[4]), ",") //分割;
+	data_buf = strings.Split(string(arr_buf[5]), ",") //分割;
 
 	fmt.Println(data_buf[0])
 
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
+		fmt.Println("should send to ip: ", string(arr_buf[0]))
 		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
