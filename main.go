@@ -1,8 +1,8 @@
 package main
 
 import (
-	"chetest/BDYString"
 	"fmt"
+	"go_client/BDYString"
 	"net"
 	"os"
 	"strconv"
@@ -16,6 +16,39 @@ var device_conn net.Conn
 const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
+
+/***********for connect conn*****************/
+type Session struct {
+	id   string
+	conn net.Conn
+}
+
+type SessionP struct {
+	session []*Session
+}
+
+var bc = &SessionP{}
+
+func NewSession(id string, conn net.Conn) *Session {
+	session := &Session{id, conn}
+	return session
+}
+
+func (bc *SessionP) AddSession(id string, conn net.Conn) {
+	newSession := NewSession(id, conn)
+	bc.session = append(bc.session, newSession)
+}
+
+func GetConnByID(id string) net.Conn {
+	for _, block := range bc.session {
+		if strings.Contains(id, string(block.id)) {
+			return block.conn
+		}
+	}
+	return nil
+}
+
+/***********for connect conn*****************/
 
 func main() {
 	//server
@@ -37,9 +70,6 @@ func main() {
 	}
 }
 
-func SetGoServer() {
-
-}
 func ClientConnetToServer() net.Conn {
 	server := "182.254.185.142:8080"
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
@@ -49,6 +79,7 @@ func ClientConnetToServer() net.Conn {
 	go ClientAndServerConn(client_conn)
 	return client_conn
 }
+
 func checkErr(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
@@ -142,6 +173,8 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
+	bc.AddSession(imei, conn) //绑定imei与conn
+
 	switch comand_buf[0] {
 	case "LOCA":
 		//parse data
@@ -172,7 +205,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 			break
 		}
 		fmt.Println("send data to server")
-		buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
+		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
 		_, err = ClientConnetToServer().Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -217,7 +250,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		_, err = conn.Write([]byte(buf))
 	}
 	fmt.Println("****************************************************************************************")
-	device_conn = conn
+	//device_conn = conn
 }
 
 func ParseServerProtocol(rev_buf string, conn net.Conn) {
@@ -232,7 +265,8 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		fmt.Println("should send to ip: ", string(arr_buf[0]))
+		fmt.Println("should send to ip: ", string(arr_buf[1]))
+		device_conn = GetConnByID(string(arr_buf[1]))
 		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
