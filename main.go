@@ -67,12 +67,23 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			if strings.Contains(err.Error(), "use of closed network connection") {
-				break
-			}
 			continue
 		}
+		go ConnectStatus(conn, service)
 		go DeviceAndServerConn(conn)
+	}
+}
+
+func ConnectStatus(conn net.Conn, service string) {
+	for {
+		conn, err := net.Dial("tcp", service)
+		fmt.Print("connect (", service)
+		fmt.Println(conn.RemoteAddr().String())
+		if err != nil {
+			fmt.Println(") fail")
+		} else {
+			fmt.Println(") ok")
+		}
 	}
 }
 
@@ -154,15 +165,7 @@ func GetTimeStampForSYNC() string {
 }
 
 func testbuf() {
-	buf := "S168#358511029674984#000e#0012#SYNC:0003;CLOSED:1"
 
-	var arr_buf, data_buf, comand_buf []string
-
-	arr_buf = strings.Split(buf, "#")                    //先分割#
-	data_buf = strings.Split(string(arr_buf[4]), ";")    //分割;
-	comand_buf = strings.Split(string(data_buf[0]), ":") //分割:
-
-	fmt.Println(comand_buf[1])
 }
 
 func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
