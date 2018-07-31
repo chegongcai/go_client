@@ -40,16 +40,17 @@ func (bc *SessionP) AddSession(id string, conn net.Conn) {
 	bc.session = append(bc.session, newSession)
 }
 
-func GetConnByID(id string) net.Conn {
+func GetConnByID(id string) (net.Conn, error) {
+	var conn net.Conn
 	for _, block := range bc.session {
 		fmt.Println(block.id)
 		fmt.Println(block.conn.RemoteAddr().String())
 		if strings.Contains(id, block.id) {
 			fmt.Println("get conn")
-			return block.conn
+			return block.conn, nil
 		}
 	}
-	return nil
+	return conn, syscall.EINVAL
 }
 
 func DeleteConnByID(id string) {
@@ -284,9 +285,11 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		device_conn = GetConnByID(string(arr_buf[0]))
-		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
-		_, err = device_conn.Write([]byte(rev_buf))
+		device_conn, err = GetConnByID(string(arr_buf[0]))
+		if err == nil {
+			fmt.Println("device ip: ", device_conn.RemoteAddr().String())
+			_, err = device_conn.Write([]byte(rev_buf))
+		}
 		break
 	}
 	fmt.Println("****************************************************************************************")
