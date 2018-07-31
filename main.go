@@ -176,8 +176,6 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
-	bc.AddSession(conn.RemoteAddr().String(), conn) //绑定imei与conn
-
 	switch comand_buf[0] {
 	case "LOCA":
 		//parse data
@@ -232,7 +230,8 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	case "SYNC":
 		////parse data
 		var buf string
-		if comand_buf[1] == "0000" {
+		if comand_buf[1] == "0000" { //收到登录包
+			bc.AddSession(conn.RemoteAddr().String(), conn) //绑定ip与conn
 			buf = fmt.Sprintf("S168#%s#%s#0023#ACK^SYNC,%s$", imei, serial_num, GetTimeStampForSYNC())
 		} else {
 			buf = fmt.Sprintf("S168#%s#%s#0009#ACK^SYNC,$", imei, serial_num)
