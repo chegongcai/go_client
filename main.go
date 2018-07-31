@@ -176,7 +176,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
-	bc.AddSession(imei, conn) //绑定imei与conn
+	bc.AddSession(conn.RemoteAddr().String(), conn) //绑定imei与conn
 
 	switch comand_buf[0] {
 	case "LOCA":
@@ -208,7 +208,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 			break
 		}
 		fmt.Println("send data to server")
-		buf := fmt.Sprintf("S168#%s#%s#0009#ACK^LOCA,$", imei, serial_num)
+		buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
 		_, err = ClientConnetToServer().Write([]byte(buf)) //send to server
 		break
 	case "B2G":
@@ -261,15 +261,14 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	var arr_buf, data_buf []string
 
 	arr_buf = strings.Split(rev_buf, "#")             //先分割#
-	data_buf = strings.Split(string(arr_buf[4]), ",") //分割;
+	data_buf = strings.Split(string(arr_buf[5]), ",") //分割;
 
 	fmt.Println(data_buf[0])
 
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		//fmt.Println("should send to ip: ", string(arr_buf[1]))
-		device_conn = GetConnByID(string(arr_buf[1]))
+		device_conn = GetConnByID(string(arr_buf[0]))
 		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
