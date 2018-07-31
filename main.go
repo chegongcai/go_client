@@ -67,6 +67,7 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
+			fmt.Println("connect closed")
 			continue
 		}
 		go DeviceAndServerConn(conn)
