@@ -55,19 +55,15 @@ func GetConnByID(id string) net.Conn {
 func DeleteConnByID(id string) {
 	fmt.Println(bc.session)
 	for index, block := range bc.session {
-		fmt.Println(index)
 		if strings.Contains(id, string(block.id)) {
 			bc.session = append(bc.session[:index], bc.session[index+1:]...)
-			fmt.Println(bc.session)
 		}
 	}
 }
 
 func CheckSession(id string) error {
-	for index, block := range bc.session {
-		fmt.Println(index)
+	for _, block := range bc.session {
 		if strings.Contains(id, string(block.id)) {
-			fmt.Println("the same id")
 			return nil
 		}
 	}
