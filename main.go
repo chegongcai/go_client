@@ -41,7 +41,8 @@ func (bc *SessionP) AddSession(id string, conn net.Conn) {
 
 func GetConnByID(id string) net.Conn {
 	for _, block := range bc.session {
-		if strings.Contains(id, string(block.id)) {
+		if strings.Contains(id, block.id) {
+			fmt.Println("get conn")
 			return block.conn
 		}
 	}
@@ -267,7 +268,7 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 		fmt.Println("get data from go server and then send to device")
 		fmt.Println("should send to ip: ", string(arr_buf[1]))
 		device_conn = GetConnByID(string(arr_buf[1]))
-		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
+		//fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
