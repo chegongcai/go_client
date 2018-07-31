@@ -252,7 +252,6 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	}
 	fmt.Println("****************************************************************************************")
 	device_conn = conn
-	fmt.Println(device_conn)
 }
 
 func ParseServerProtocol(rev_buf string, conn net.Conn) {
@@ -267,9 +266,9 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		fmt.Println("should send to ip: ", string(arr_buf[1]))
+		//fmt.Println("should send to ip: ", string(arr_buf[1]))
 		//device_conn = GetConnByID(string(arr_buf[1]))
-		//fmt.Println("device ip: ", device_conn.RemoteAddr().String())
+		fmt.Println("device ip: ", device_conn.RemoteAddr().String())
 		_, err = device_conn.Write([]byte(rev_buf))
 		break
 	}
