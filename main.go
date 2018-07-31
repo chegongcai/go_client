@@ -67,7 +67,9 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("connect closed")
+			if strings.Contains(err.Error(), "use of closed network connection") {
+				break
+			}
 			continue
 		}
 		go DeviceAndServerConn(conn)
