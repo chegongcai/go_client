@@ -17,7 +17,7 @@ const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
 
-/***********for connect conn*****************/
+//for connect conn
 type Session struct {
 	id   string
 	conn net.Conn
@@ -51,7 +51,7 @@ func GetConnByID(id string) net.Conn {
 	return nil
 }
 
-/***********for connect conn*****************/
+//for connect conn
 
 func main() {
 	//server
@@ -69,21 +69,7 @@ func main() {
 		if err != nil {
 			continue
 		}
-		go ConnectStatus(conn, service)
 		go DeviceAndServerConn(conn)
-	}
-}
-
-func ConnectStatus(conn net.Conn, service string) {
-	for {
-		conn, err := net.Dial("tcp", service)
-		fmt.Print("connect (", service)
-		fmt.Println(conn.RemoteAddr().String())
-		if err != nil {
-			fmt.Println(") fail")
-		} else {
-			fmt.Println(") ok")
-		}
 	}
 }
 
@@ -131,6 +117,7 @@ func DeviceAndServerConn(conn net.Conn) {
 	for {
 		n, err := conn.Read(buf[0:])
 		if err != nil {
+			fmt.Println("conn close", n, conn.RemoteAddr().String())
 			return
 		}
 		rAddr := conn.RemoteAddr()
