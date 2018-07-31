@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -49,6 +50,28 @@ func GetConnByID(id string) net.Conn {
 		}
 	}
 	return nil
+}
+
+func DeleteConnByID(id string) {
+	fmt.Println(bc.session)
+	for index, block := range bc.session {
+		fmt.Println(index)
+		if strings.Contains(id, string(block.id)) {
+			bc.session = append(bc.session[:index], bc.session[index+1:]...)
+			fmt.Println(bc.session)
+		}
+	}
+}
+
+func CheckSession(id string) error {
+	for index, block := range bc.session {
+		fmt.Println(index)
+		if strings.Contains(id, string(block.id)) {
+			fmt.Println("the same id")
+			return nil
+		}
+	}
+	return syscall.EINVAL
 }
 
 //for connect conn
@@ -118,6 +141,7 @@ func DeviceAndServerConn(conn net.Conn) {
 		n, err := conn.Read(buf[0:])
 		if err != nil {
 			fmt.Println("conn close", n, conn.RemoteAddr().String())
+			DeleteConnByID(conn.RemoteAddr().String()) //释放断开的链接绑定
 			return
 		}
 		rAddr := conn.RemoteAddr()
@@ -169,7 +193,10 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
-	bc.AddSession(conn.RemoteAddr().String(), conn) //绑定ip与conn
+	err_check := CheckSession(conn.RemoteAddr().String()) //检查是否是已经绑定过的
+	if err_check != nil {
+		bc.AddSession(conn.RemoteAddr().String(), conn) //绑定ip与conn
+	}
 
 	switch comand_buf[0] {
 	case "LOCA":
@@ -273,3 +300,82 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	}
 	fmt.Println("****************************************************************************************")
 }
+
+/*
+package main
+
+import (
+	"fmt"
+	"strings"
+	"syscall"
+)
+
+type Session struct {
+	Data []byte
+	ID   []byte
+}
+
+type SessionP struct {
+	session []*Session
+}
+
+var bc = &SessionP{}
+
+func NewSession(data string, id []byte) *Session {
+	session := &Session{[]byte(data), id}
+	return session
+}
+
+func (bc *SessionP) AddSession(data string, id string) {
+	newSession := NewSession(data, []byte(id))
+	bc.session = append(bc.session, newSession)
+}
+
+func GetIDByData(data string) []byte {
+	for _, block := range bc.session {
+		if strings.Contains(data, string(block.Data)) {
+			return block.ID
+		}
+	}
+	return nil
+}
+
+func DeleteConnByID(data string) {
+	fmt.Println(bc.session)
+	for index, block := range bc.session {
+		fmt.Println(index)
+		if strings.Contains(data, string(block.Data)) {
+			bc.session = append(bc.session[:index], bc.session[index+1:]...)
+			fmt.Println(bc.session)
+		}
+	}
+}
+
+func CheckSession(data string) error {
+	for index, block := range bc.session {
+		fmt.Println(index)
+		if strings.Contains(data, string(block.Data)) {
+			fmt.Println("the same data")
+			return nil
+		}
+	}
+	return syscall.EINVAL
+}
+
+func InitBlock() {
+	bc.AddSession("Send 1", "123")
+	err := CheckSession("Send 1")
+	if err != nil {
+		bc.AddSession("Send 1", "123")
+	}
+	bc.AddSession("Send 2", "456")
+	bc.AddSession("Send 3", "789")
+}
+
+func main() {
+	InitBlock()
+	fmt.Println(bc.session)
+	DeleteConnByID("Send 2")
+	fmt.Println(string(GetIDByData("Send 2")))
+}
+*/
