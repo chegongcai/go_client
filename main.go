@@ -129,7 +129,7 @@ func ClientAndServerConn(conn net.Conn) {
 		data_hb := buffer[:n]
 		message := make(chan byte)
 		go GetMessage(data_hb, message)
-		go HeartBeat(conn, message, 4)
+		go HeartBeat(conn, message, 60)
 		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
 }
