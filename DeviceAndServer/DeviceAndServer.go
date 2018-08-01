@@ -7,6 +7,7 @@ import (
 	"go_client/HeartBeat"
 	"go_client/session"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +18,27 @@ const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
 
+func checkErr(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
+		os.Exit(1)
+	}
+}
+
+func ListenFromDevice() {
+	service := ":8080"
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
+	checkErr(err)
+	listener, err := net.ListenTCP("tcp", tcpAddr)
+	checkErr(err)
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			continue
+		}
+		go DeviceAndServerConn(conn)
+	}
+}
 func DeviceAndServerConn(conn net.Conn) {
 	defer conn.Close()
 
