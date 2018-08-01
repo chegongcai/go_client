@@ -122,14 +122,10 @@ func ClientAndServerConn(conn net.Conn) {
 		fmt.Println("server ip: ", conn.RemoteAddr().String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("receive data from server: ", string(buffer[:n]))
-		//if buffer[n-1] != '$' {
-		//	return
-		//}
+		if buffer[n-1] != '$' {
+			return
+		}
 		rev_buf := string(buffer[0 : n-1]) //delete the tail #
-		data_hb := buffer[:n]
-		message := make(chan byte)
-		go GetMessage(data_hb, message)
-		go HeartBeat(conn, message, 60)
 		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
 }
@@ -169,9 +165,14 @@ func DeviceAndServerConn(conn net.Conn) {
 		fmt.Println("device ip: ", rAddr.String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("rev data: ", string(buf[0:n]))
-		if buf[n-1] != '$' {
-			return
-		}
+		//if buf[n-1] != '$' {
+		//	return
+		//}
+		data_hb := buf[:n]
+		message := make(chan byte)
+		go GetMessage(data_hb, message)
+		go HeartBeat(conn, message, 60)
+
 		rev_buf := string(buf[0 : n-1])    //delete the tail #
 		ParseDeviceProtocol(rev_buf, conn) //do protocol parse
 	}
