@@ -88,7 +88,7 @@ func main() {
 		if err != nil {
 			continue
 		}
-		conn.SetReadDeadline(time.Now().Add(time.Duration(8) * time.Second))
+		conn.SetReadDeadline(time.Now().Add(time.Duration(60) * time.Second))
 		go DeviceAndServerConn(conn)
 	}
 }
