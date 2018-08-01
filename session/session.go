@@ -36,7 +36,6 @@ func GetConnByID(id string) (net.Conn, error) {
 	for _, block := range bc.session {
 		fmt.Println(block.id)
 		if strings.Contains(id, block.id) {
-			//fmt.Println("get conn")
 			return block.conn, nil
 		}
 	}

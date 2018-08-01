@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-//182.254.185.142  8080
-const version = 0 // 0 for debug
-var SerialNum int
-var send_test int = 0
-
 func main() {
 	//server
 	service := ":8080"
