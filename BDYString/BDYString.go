@@ -1,8 +1,10 @@
 package BDYString
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //去掉字符串中最后位
@@ -131,4 +133,9 @@ func HexString2Int(str string) int {
 	}
 	flag := num[0]*4096 + num[1]*256 + num[2]*16 + num[3]
 	return flag
+}
+
+func GetTimeStamp() string {
+	buf := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	return buf
 }
