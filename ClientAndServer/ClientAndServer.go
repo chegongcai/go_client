@@ -9,15 +9,18 @@ import (
 	"strings"
 )
 
-var device_conn net.Conn
+var device_conn, client_conn net.Conn
 
-func ClientConnetToServer() net.Conn {
+func ClientConnetToServer() {
 	server := "182.254.185.142:8080"
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
 	checkErr(err)
-	client_conn, err := net.DialTCP("tcp", nil, server_addr)
+	client_conn, err = net.DialTCP("tcp", nil, server_addr)
 	checkErr(err)
 	go ClientAndServerConn(client_conn)
+}
+
+func GetClientConn() net.Conn {
 	return client_conn
 }
 

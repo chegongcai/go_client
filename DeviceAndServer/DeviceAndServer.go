@@ -110,7 +110,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		fmt.Println("send data to server")
 		buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
 		fmt.Println(buf)
-		_, err = ClientAndServer.ClientConnetToServer().Write([]byte(buf)) //send to server
+		_, err = ClientAndServer.GetClientConn().Write([]byte(buf)) //send to server
 		break
 	case "B2G":
 		//parse data
