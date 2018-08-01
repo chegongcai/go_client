@@ -88,6 +88,7 @@ func main() {
 		if err != nil {
 			continue
 		}
+		conn.SetReadDeadline(time.Now().Add(time.Duration(8) * time.Second))
 		go DeviceAndServerConn(conn)
 	}
 }
@@ -121,14 +122,37 @@ func ClientAndServerConn(conn net.Conn) {
 		fmt.Println("server ip: ", conn.RemoteAddr().String())
 		fmt.Println("time: ", GetTimeStamp())
 		fmt.Println("receive data from server: ", string(buffer[:n]))
-		if buffer[n-1] != '$' {
-			return
-		}
+		//if buffer[n-1] != '$' {
+		//	return
+		//}
 		rev_buf := string(buffer[0 : n-1]) //delete the tail #
+		data_hb := buffer[:n]
+		message := make(chan byte)
+		go GetMessage(data_hb, message)
+		go HeartBeat(conn, message, 4)
 		ParseServerProtocol(rev_buf, conn) //do protocol parse
 	}
 }
 
+//for HeartBeat
+func GetMessage(bytes []byte, message chan byte) {
+	for _, v := range bytes {
+		message <- v
+	}
+	close(message)
+}
+
+func HeartBeat(conn net.Conn, message chan byte, timeout int) {
+	select {
+	case <-message:
+		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
+	case <-time.After(time.Second * 5):
+		fmt.Println(conn.RemoteAddr().String(), "time out")
+		conn.Close()
+	}
+}
+
+//for HeartBeat
 func DeviceAndServerConn(conn net.Conn) {
 	defer conn.Close()
 
@@ -298,82 +322,3 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	}
 	fmt.Println("****************************************************************************************")
 }
-
-/*
-package main
-
-import (
-	"fmt"
-	"strings"
-	"syscall"
-)
-
-type Session struct {
-	Data []byte
-	ID   []byte
-}
-
-type SessionP struct {
-	session []*Session
-}
-
-var bc = &SessionP{}
-
-func NewSession(data string, id []byte) *Session {
-	session := &Session{[]byte(data), id}
-	return session
-}
-
-func (bc *SessionP) AddSession(data string, id string) {
-	newSession := NewSession(data, []byte(id))
-	bc.session = append(bc.session, newSession)
-}
-
-func GetIDByData(data string) []byte {
-	for _, block := range bc.session {
-		if strings.Contains(data, string(block.Data)) {
-			return block.ID
-		}
-	}
-	return nil
-}
-
-func DeleteConnByID(data string) {
-	fmt.Println(bc.session)
-	for index, block := range bc.session {
-		fmt.Println(index)
-		if strings.Contains(data, string(block.Data)) {
-			bc.session = append(bc.session[:index], bc.session[index+1:]...)
-			fmt.Println(bc.session)
-		}
-	}
-}
-
-func CheckSession(data string) error {
-	for index, block := range bc.session {
-		fmt.Println(index)
-		if strings.Contains(data, string(block.Data)) {
-			fmt.Println("the same data")
-			return nil
-		}
-	}
-	return syscall.EINVAL
-}
-
-func InitBlock() {
-	bc.AddSession("Send 1", "123")
-	err := CheckSession("Send 1")
-	if err != nil {
-		bc.AddSession("Send 1", "123")
-	}
-	bc.AddSession("Send 2", "456")
-	bc.AddSession("Send 3", "789")
-}
-
-func main() {
-	InitBlock()
-	fmt.Println(bc.session)
-	DeleteConnByID("Send 2")
-	fmt.Println(string(GetIDByData("Send 2")))
-}
-*/
