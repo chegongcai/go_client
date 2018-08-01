@@ -154,5 +154,4 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		_, err = conn.Write([]byte(buf))
 	}
 	fmt.Println("****************************************************************************************")
-	//device_conn = conn
 }

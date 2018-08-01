@@ -9,15 +9,16 @@ import (
 )
 
 func main() {
-	//server
+
+	//go as client
+	ClientAndServer.ClientConnetToServer()
+
+	//go as server
 	service := ":8080"
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
 	checkErr(err)
 	listener, err := net.ListenTCP("tcp", tcpAddr)
 	checkErr(err)
-
-	//client
-	ClientAndServer.ClientConnetToServer()
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
