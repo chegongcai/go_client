@@ -6,7 +6,6 @@ import (
 	"go_client/DeviceAndServer"
 	"net"
 	"os"
-	"time"
 )
 
 func main() {
@@ -24,7 +23,6 @@ func main() {
 		if err != nil {
 			continue
 		}
-		conn.SetDeadline(time.Now().Add(time.Duration(60) * time.Second))
 		go DeviceAndServer.DeviceAndServerConn(conn)
 	}
 }
