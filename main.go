@@ -44,7 +44,7 @@ func GetConnByID(id string) (net.Conn, error) {
 	var conn net.Conn
 	for _, block := range bc.session {
 		fmt.Println(block.id)
-		fmt.Println(block.conn.RemoteAddr().String())
+		//fmt.Println(block.conn.RemoteAddr().String())
 		if strings.Contains(id, block.id) {
 			fmt.Println("get conn")
 			return block.conn, nil
