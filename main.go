@@ -88,7 +88,6 @@ func main() {
 		if err != nil {
 			continue
 		}
-		conn.SetDeadline(time.Now().Add(time.Duration(60) * time.Second))
 		go DeviceAndServerConn(conn)
 	}
 }
@@ -141,6 +140,7 @@ func GetMessage(bytes []byte, message chan byte) {
 func HeartBeat(conn net.Conn, message chan byte, timeout int) {
 	select {
 	case <-message:
+		fmt.Println("message time: ", GetTimeStamp())
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	case <-time.After(time.Second * 5):
 		fmt.Println(conn.RemoteAddr().String(), "time out")
@@ -156,7 +156,7 @@ func DeviceAndServerConn(conn net.Conn) {
 	for {
 		n, err := conn.Read(buf[0:])
 		if err != nil {
-			fmt.Println("conn close", n, conn.RemoteAddr().String())
+			fmt.Println("conn close", n, conn.RemoteAddr().String(), GetTimeStamp())
 			DeleteConnByID(conn.RemoteAddr().String()) //释放断开的链接绑定
 			return
 		}
@@ -171,7 +171,7 @@ func DeviceAndServerConn(conn net.Conn) {
 		data_hb := buf[:n]
 		message := make(chan byte)
 		go GetMessage(data_hb, message)
-		go HeartBeat(conn, message, 60)
+		go HeartBeat(conn, message, 120)
 
 		rev_buf := string(buf[0 : n-1])    //delete the tail #
 		ParseDeviceProtocol(rev_buf, conn) //do protocol parse
