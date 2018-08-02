@@ -70,7 +70,6 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 		}
 		break
 	}
-	fmt.Println("****************************************************************************************")
 	if err != nil {
 		return
 	}

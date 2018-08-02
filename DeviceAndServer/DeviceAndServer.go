@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//182.254.185.142  8080
+//134.175.174.222  8080
 const version = 0 // 0 for debug
 var SerialNum int
 var send_test int = 0
@@ -39,6 +39,7 @@ func ListenFromDevice() {
 		go DeviceAndServerConn(conn)
 	}
 }
+
 func DeviceAndServerConn(conn net.Conn) {
 	defer conn.Close()
 
@@ -85,7 +86,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	var err error
 	var arr_buf, data_buf, comand_buf []string
 
-	arr_buf = strings.Split(rev_buf, "#")                //先分割#
+	arr_buf = strings.Split(rev_buf, "#")                //分割#
 	data_buf = strings.Split(string(arr_buf[4]), ";")    //分割;
 	comand_buf = strings.Split(string(data_buf[0]), ":") //分割;
 
