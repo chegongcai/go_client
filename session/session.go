@@ -13,13 +13,13 @@ type Session struct {
 }
 
 type SessionP struct {
-	session []*Session
+	session []Session
 }
 
-var bc = &SessionP{}
+var bc = SessionP{}
 
 func AddNewSession(id string, conn net.Conn) {
-	session := &Session{id, conn}
+	session := Session{id, conn}
 	bc.session = append(bc.session, session)
 }
 
