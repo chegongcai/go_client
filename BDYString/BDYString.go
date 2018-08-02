@@ -7,7 +7,11 @@ import (
 	"time"
 )
 
-//去掉字符串中最后位
+/*
+description: delete the tail of string
+input: string
+return: string without tail
+*/
 func DeleteTail(str string) string {
 	lenght := len([]rune(str))
 	buf := []byte(str)
@@ -15,7 +19,11 @@ func DeleteTail(str string) string {
 	return str_out
 }
 
-//解析BDT01协议中的状态位
+/*
+description: parse the status bit of the protocol "BTD01"
+input: string
+return: signal, sat_num, bat, mode
+*/
 func ParseStatusData(str string) (signal string, sat_num string, bat string, mode string) {
 	buf := []byte(str)
 	signal = string(buf[0:3])
@@ -25,7 +33,14 @@ func ParseStatusData(str string) (signal string, sat_num string, bat string, mod
 	return signal, sat_num, bat, mode
 }
 
-//从字符串的某位开始，获取指定长度的字符串
+/*
+description: Gets the string of the specified length, starting with a bit of the string
+input:
+string: string need to deal with
+start: start number of the string
+length: the length of string need to get
+return: the result of string
+*/
 func Substr(str string, start, length int) string {
 	rs := []rune(str)
 	rl := len(rs)
@@ -56,7 +71,14 @@ func Substr(str string, start, length int) string {
 	return string(rs[start:end])
 }
 
-//获取指定开始到指定结束的字符串
+/*
+description: Gets the string from the specified start to the specified end
+input:
+string: string need to deal with
+start: start bit of the string
+end: end bit of string
+return: the result of string
+*/
 func GetBetweenStr(str, start, end string) string {
 	n := strings.Index(str, start)
 	if n == -1 {
@@ -71,7 +93,11 @@ func GetBetweenStr(str, start, end string) string {
 	return str
 }
 
-//10进制整形转16进制字符串
+/*
+description: change decimal int to hex string
+input: decimal int
+return: hex string
+*/
 func Int2HexString(lenght int) string {
 	var num [4]int
 	var buf [4]string
@@ -100,7 +126,11 @@ func Int2HexString(lenght int) string {
 	return str_out
 }
 
-//16进制字符串转10进制整形
+/*
+description: change hex string to decimal int
+input: hex string
+return: decimal int
+*/
 func HexString2Int(str string) int {
 	lenght := len([]rune(str))
 	var num [4]int
@@ -135,6 +165,11 @@ func HexString2Int(str string) int {
 	return flag
 }
 
+/*
+description: get the time stamp now
+input: no
+return: time string
+*/
 func GetTimeStamp() string {
 	buf := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 	return buf

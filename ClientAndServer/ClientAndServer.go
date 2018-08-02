@@ -11,6 +11,11 @@ import (
 
 var device_conn, client_conn net.Conn
 
+/*
+description:
+go as a client
+start connect to the server(JAVA server)
+*/
 func ClientConnetToServer() {
 	server := "182.254.185.142:8080"
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
@@ -20,6 +25,10 @@ func ClientConnetToServer() {
 	go ClientAndServerConn(client_conn)
 }
 
+/*
+description:
+return the network connection
+*/
 func GetClientConn() net.Conn {
 	return client_conn
 }
@@ -31,6 +40,11 @@ func checkErr(err error) {
 	}
 }
 
+/*
+description: get the network connection data, and other messege
+input: net.conn
+return: no
+*/
 func ClientAndServerConn(conn net.Conn) {
 	buffer := make([]byte, 2048)
 	for {
@@ -51,12 +65,19 @@ func ClientAndServerConn(conn net.Conn) {
 	}
 }
 
+/*
+description: do the protocol parse, and then send the data to the device
+input
+rev_buf: data from conn.read
+conn: the network connection
+return: if error, will do the return
+*/
 func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	var err error
 	var arr_buf, data_buf []string
 
-	arr_buf = strings.Split(rev_buf, "#")             //先分割#
-	data_buf = strings.Split(string(arr_buf[5]), ",") //分割;
+	arr_buf = strings.Split(rev_buf, "#")             //parse "#"
+	data_buf = strings.Split(string(arr_buf[5]), ",") //parse ";"
 
 	fmt.Println(data_buf[0])
 

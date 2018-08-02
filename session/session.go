@@ -18,19 +18,11 @@ type SessionP struct {
 
 var bc = &SessionP{}
 
-func NewSession(id string, conn net.Conn) *Session {
-	session := &Session{id, conn}
-	return session
-}
-
-func (bc *SessionP) AddSession(id string, conn net.Conn) {
-	newSession := NewSession(id, conn)
-	bc.session = append(bc.session, newSession)
-}
-
 func AddNewSession(id string, conn net.Conn) {
-	bc.AddSession(id, conn)
+	session := &Session{id, conn}
+	bc.session = append(bc.session, session)
 }
+
 func GetConnByID(id string) (net.Conn, error) {
 	var conn net.Conn
 	for _, block := range bc.session {
