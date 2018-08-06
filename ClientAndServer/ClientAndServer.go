@@ -11,6 +11,7 @@ import (
 )
 
 var device_conn, client_conn net.Conn
+var connect_status int = 0
 
 /*
 description:
@@ -24,11 +25,17 @@ func ClientConnetToServer() {
 	client_conn, err = net.DialTCP("tcp", nil, server_addr)
 	if err != nil {
 		fmt.Println("Reconnect to server...")
+		connect_status = 0
 		time.AfterFunc(5*time.Second, ClientConnetToServer)
 	} else {
 		fmt.Println("Connect to server OK!")
+		connect_status = 1
 		go ClientAndServerConn(client_conn)
 	}
+}
+
+func GetConnectStatus() int {
+	return connect_status
 }
 
 /*

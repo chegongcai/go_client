@@ -101,6 +101,8 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		session.AddNewSession(conn.RemoteAddr().String(), conn)
 	}
 
+	connect_satus := ClientAndServer.GetConnectStatus()
+
 	switch comand_buf[0] {
 	case "LOCA":
 		//parse data
@@ -130,10 +132,12 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 			fmt.Println(LBS_DATA)
 			break
 		}
-		fmt.Println("send data to server")
-		buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
-		fmt.Println(buf)
-		_, err = ClientAndServer.GetClientConn().Write([]byte(buf)) //send to server
+		if connect_satus == 1 {
+			fmt.Println("send data to server")
+			buf := fmt.Sprintf("%s#S168#%s#%s#0009#ACK^LOCA,$", conn.RemoteAddr().String(), imei, serial_num)
+			fmt.Println(buf)
+			_, err = ClientAndServer.GetClientConn().Write([]byte(buf)) //send to server
+		}
 		break
 	case "B2G":
 		//parse data
