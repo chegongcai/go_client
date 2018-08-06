@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
 
 var device_conn, client_conn net.Conn
@@ -21,8 +22,13 @@ func ClientConnetToServer() {
 	server_addr, err := net.ResolveTCPAddr("tcp4", server)
 	checkErr(err)
 	client_conn, err = net.DialTCP("tcp", nil, server_addr)
-	checkErr(err)
-	go ClientAndServerConn(client_conn)
+	if err != nil {
+		fmt.Println("Reconnect to server...")
+		time.AfterFunc(5*time.Second, ClientConnetToServer)
+	} else {
+		fmt.Println("Connect to server OK!")
+		go ClientAndServerConn(client_conn)
+	}
 }
 
 /*
@@ -51,6 +57,7 @@ func ClientAndServerConn(conn net.Conn) {
 		n, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Println("waiting server back msg error: ", err)
+			ClientConnetToServer()
 			return
 		}
 		fmt.Println("****************************************************************************************")
@@ -67,9 +74,8 @@ func ClientAndServerConn(conn net.Conn) {
 
 /*
 description: do the protocol parse, and then send the data to the device
-input
-rev_buf: data from conn.read
-conn: the network connection
+input: rev_buf->data from conn.read
+	   conn->the network connection
 return: if error, will do the return
 */
 func ParseServerProtocol(rev_buf string, conn net.Conn) {

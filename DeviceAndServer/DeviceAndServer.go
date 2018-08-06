@@ -48,7 +48,7 @@ func DeviceAndServerConn(conn net.Conn) {
 		n, err := conn.Read(buf[0:])
 		if err != nil {
 			fmt.Println("conn close", n, conn.RemoteAddr().String(), BDYString.GetTimeStamp())
-			session.DeleteConnByID(conn.RemoteAddr().String()) //释放断开的链接绑定
+			session.DeleteConnByID(conn.RemoteAddr().String())
 			return
 		}
 		rAddr := conn.RemoteAddr()
@@ -86,9 +86,9 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	var err error
 	var arr_buf, data_buf, comand_buf []string
 
-	arr_buf = strings.Split(rev_buf, "#")                //分割#
-	data_buf = strings.Split(string(arr_buf[4]), ";")    //分割;
-	comand_buf = strings.Split(string(data_buf[0]), ":") //分割;
+	arr_buf = strings.Split(rev_buf, "#")                //parse "#"
+	data_buf = strings.Split(string(arr_buf[4]), ";")    //parse ";"
+	comand_buf = strings.Split(string(data_buf[0]), ":") //parse ":"
 
 	fmt.Println(comand_buf[0])
 	serial_num := string(arr_buf[2])
@@ -96,9 +96,9 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
-	err_check := session.CheckSession(conn.RemoteAddr().String()) //检查是否是已经绑定过的
+	err_check := session.CheckSession(conn.RemoteAddr().String())
 	if err_check != nil {
-		session.AddNewSession(conn.RemoteAddr().String(), conn) //绑定ip与conn
+		session.AddNewSession(conn.RemoteAddr().String(), conn)
 	}
 
 	switch comand_buf[0] {
@@ -139,7 +139,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		//parse data
 		var lbs_buf []string
 		var lbs_int [4]int
-		lbs_buf = strings.Split(string(comand_buf[1]), ",") //分割;
+		lbs_buf = strings.Split(string(comand_buf[1]), ",") //parse ";"
 		for i := 0; i < 4; i++ {
 			lbs_int[i] = BDYString.HexString2Int(string(lbs_buf[i]))
 		}

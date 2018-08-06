@@ -35,10 +35,9 @@ func ParseStatusData(str string) (signal string, sat_num string, bat string, mod
 
 /*
 description: Gets the string of the specified length, starting with a bit of the string
-input:
-string: string need to deal with
-start: start number of the string
-length: the length of string need to get
+input: string->string need to deal with
+	   start->start number of the string
+	   length->the length of string need to get
 return: the result of string
 */
 func Substr(str string, start, length int) string {
@@ -73,10 +72,9 @@ func Substr(str string, start, length int) string {
 
 /*
 description: Gets the string from the specified start to the specified end
-input:
-string: string need to deal with
-start: start bit of the string
-end: end bit of string
+input: string->string need to deal with
+	   start->start bit of the string
+	   end->end bit of string
 return: the result of string
 */
 func GetBetweenStr(str, start, end string) string {
