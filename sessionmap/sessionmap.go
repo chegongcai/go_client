@@ -1,7 +1,6 @@
 package sessionmap
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -24,7 +23,6 @@ func GetConnByIDMap(id string) (net.Conn, bool) {
 	var conn net.Conn
 	session, ok := sessionmap[id]
 	if ok {
-		fmt.Println("get conn", session.conn.RemoteAddr().String())
 		return session.conn, true
 	} else {
 		return conn, false
