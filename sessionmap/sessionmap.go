@@ -22,6 +22,9 @@ func DeleteOneSessionMap(id string) {
 
 func GetConnByIDMap(id string) (net.Conn, bool) {
 	var conn net.Conn
+	for session := range sessionmap {
+		fmt.Println(sessionmap[session].conn.RemoteAddr().String())
+	}
 	session, ok := sessionmap[id]
 	if ok {
 		fmt.Println("get conn", session.conn.RemoteAddr().String())
