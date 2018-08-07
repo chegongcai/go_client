@@ -5,15 +5,15 @@ import (
 	"net"
 )
 
-type Session struct {
+type SessionMap struct {
 	id   string
 	conn net.Conn
 }
 
-var sessionmap = make(map[string]Session)
+var sessionmap = make(map[string]SessionMap)
 
 func AddNewSessionMap(id string, conn net.Conn) {
-	sessionmap[id] = Session{id, conn}
+	sessionmap[id] = SessionMap{id, conn}
 }
 
 func DeleteOneSessionMap(id string) {
@@ -22,9 +22,6 @@ func DeleteOneSessionMap(id string) {
 
 func GetConnByIDMap(id string) (net.Conn, bool) {
 	var conn net.Conn
-	for session := range sessionmap {
-		fmt.Println(sessionmap[session].conn.RemoteAddr().String())
-	}
 	session, ok := sessionmap[id]
 	if ok {
 		fmt.Println("get conn", session.conn.RemoteAddr().String())
