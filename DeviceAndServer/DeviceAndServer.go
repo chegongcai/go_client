@@ -5,7 +5,8 @@ import (
 	"go_client/BDYString"
 	"go_client/ClientAndServer"
 	"go_client/HeartBeat"
-	"go_client/session"
+	//"go_client/session"
+	"go_client/sessionmap"
 	"net"
 	"os"
 	"strconv"
@@ -48,7 +49,8 @@ func DeviceAndServerConn(conn net.Conn) {
 		n, err := conn.Read(buf[0:])
 		if err != nil {
 			fmt.Println("conn close", n, conn.RemoteAddr().String(), BDYString.GetTimeStamp())
-			session.DeleteConnByID(conn.RemoteAddr().String())
+			//session.DeleteConnByID(conn.RemoteAddr().String())
+			sessionmap.DeleteOneSessionMap(conn.RemoteAddr().String())
 			return
 		}
 		rAddr := conn.RemoteAddr()
@@ -96,9 +98,15 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	SerialNum = BDYString.HexString2Int(serial_num)
 
-	err_check := session.CheckSession(conn.RemoteAddr().String())
-	if err_check != nil {
-		session.AddNewSession(conn.RemoteAddr().String(), conn)
+	/*
+		err_check := session.CheckSession(conn.RemoteAddr().String())
+		if err_check != nil {
+			session.AddNewSession(conn.RemoteAddr().String(), conn)
+		}
+	*/
+	err_check := sessionmap.CheckSessionMap(conn.RemoteAddr().String())
+	if err_check == false {
+		sessionmap.AddNewSessionMap(conn.RemoteAddr().String(), conn)
 	}
 
 	connect_satus := ClientAndServer.GetConnectStatus()
