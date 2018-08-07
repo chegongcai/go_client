@@ -20,12 +20,12 @@ func DeleteOneSessionMap(id string) {
 }
 
 func GetConnByIDMap(id string) (net.Conn, bool) {
-	var conn net.Conn
+	//var conn net.Conn
 	session, ok := sessionmap[id]
 	if ok {
 		return session.conn, true
 	} else {
-		return conn, false
+		return nil, false
 	}
 }
 

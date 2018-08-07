@@ -3,7 +3,6 @@ package ClientAndServer
 import (
 	"fmt"
 	"go_client/BDYString"
-	//"go_client/session"
 	"go_client/sessionmap"
 	"net"
 	"os"
@@ -99,13 +98,6 @@ func ParseServerProtocol(rev_buf string, conn net.Conn) {
 	switch data_buf[0] {
 	case "ACK^LOCA":
 		fmt.Println("get data from go server and then send to device")
-		/*
-			device_conn, err = session.GetConnByID(string(arr_buf[0]))
-			if err == nil {
-				fmt.Println("device ip: ", device_conn.RemoteAddr().String())
-				_, err = device_conn.Write([]byte(rev_buf))
-			}
-		*/
 		device_conn, ok = sessionmap.GetConnByIDMap(string(arr_buf[0]))
 		if ok == true {
 			fmt.Println("device ip: ", device_conn.RemoteAddr().String())
