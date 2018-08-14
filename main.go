@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
+	//Init mysql service
 	gomysql.Init()
+
 	//go as client
 	ClientAndServer.ClientConnetToServer()
 
