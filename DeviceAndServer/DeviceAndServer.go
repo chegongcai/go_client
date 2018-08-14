@@ -5,6 +5,7 @@ import (
 	"go_client/BDYString"
 	"go_client/ClientAndServer"
 	"go_client/HeartBeat"
+	"go_client/gomysql"
 	"go_client/sessionmap"
 	"net"
 	"os"
@@ -102,6 +103,8 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	}
 
 	connect_satus := ClientAndServer.GetConnectStatus()
+
+	gomysql.Write(GetTimeStampForSYNC(), imei, rev_buf)
 
 	switch comand_buf[0] {
 	case "LOCA":
