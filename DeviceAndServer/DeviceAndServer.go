@@ -106,7 +106,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	gomysql.Write(GetTimeStampForSYNC(), imei, rev_buf)
 
-	gomysql.Read(imei)
+	//gomysql.Read(imei)
 
 	switch comand_buf[0] {
 	case "LOCA":
