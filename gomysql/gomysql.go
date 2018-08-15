@@ -39,10 +39,11 @@ func Read(str string) {
 	checkErr(err)
 	for rows.Next() {
 		var time, imei, packet string
+		var id int
 		rows.Columns()
-		err = rows.Scan(&time, &imei, &packet)
+		err = rows.Scan(&id, &time, &imei, &packet)
 		checkErr(err)
-		fmt.Println(time, imei, packet)
+		fmt.Println(id, time, imei, packet)
 	}
 }
 
