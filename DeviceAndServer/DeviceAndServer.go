@@ -158,21 +158,23 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		//send data  //22.529793,113.952744
 		buf := fmt.Sprintf("S168#%s#%s#0028#ACK^B2G,22.529793,113.952744$", imei, serial_num)
 		fmt.Println("device ip: ", conn.RemoteAddr().String())
-		fmt.Println("send data: ", buf)
+		fmt.Println("send data to device: ", buf)
 		_, err = conn.Write([]byte(buf))
 		break
 
 	case "SYNC":
-		////parse data
-		var buf string
-		if comand_buf[1] == "0000" { //收到登录包
-			buf = fmt.Sprintf("S168#%s#%s#0023#ACK^SYNC,%s$", imei, serial_num, GetTimeStampForSYNC())
-		} else {
-			buf = fmt.Sprintf("S168#%s#%s#0009#ACK^SYNC,$", imei, serial_num)
-		}
-		fmt.Println("send data: ", buf)
-		_, err = conn.Write([]byte(buf))
-		break
+		/*
+			////parse data
+			var buf string
+			if comand_buf[1] == "0000" { //收到登录包
+				buf = fmt.Sprintf("S168#%s#%s#0023#ACK^SYNC,%s$", imei, serial_num, GetTimeStampForSYNC())
+			} else {
+				buf = fmt.Sprintf("S168#%s#%s#0009#ACK^SYNC,$", imei, serial_num)
+			}
+			fmt.Println("send data to device: ", buf)
+			_, err = conn.Write([]byte(buf))
+			break
+		*/
 	}
 	if err != nil {
 		return
@@ -182,7 +184,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		send_test = 1
 		SerialNum++
 		buf := fmt.Sprintf("S168#%s#%s#0007#FIRST,1$", imei, BDYString.Int2HexString(SerialNum))
-		fmt.Println("send data: ", buf)
+		fmt.Println("send data to device: ", buf)
 		_, err = conn.Write([]byte(buf))
 	}
 	fmt.Println("****************************************************************************************")
