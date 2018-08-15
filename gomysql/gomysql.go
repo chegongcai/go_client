@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"strings"
 )
 
 var DB *sql.DB
@@ -25,6 +26,23 @@ func Write(time string, imei string, packet string) {
 		if id, err := result.LastInsertId(); err == nil {
 			fmt.Println("insert id : ", id)
 		}
+	}
+}
+
+func Read(str string) {
+	if DB == nil {
+		return
+	}
+	buf := strings.Join([]string{"SELECT * FROM gomysql where imei ='", str, "'"}, "")
+
+	rows, err := DB.Query(buf)
+	checkErr(err)
+	for rows.Next() {
+		var time, imei, packet string
+		rows.Columns()
+		err = rows.Scan(&time, &imei, &packet)
+		checkErr(err)
+		fmt.Println(time, imei, packet)
 	}
 }
 
