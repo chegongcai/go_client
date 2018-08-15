@@ -5,7 +5,7 @@ import (
 	"go_client/BDYString"
 	"go_client/ClientAndServer"
 	"go_client/HeartBeat"
-	"go_client/gomysql"
+	//"go_client/gomysql"
 	"go_client/sessionmap"
 	"net"
 	"os"
@@ -104,7 +104,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 
 	connect_satus := ClientAndServer.GetConnectStatus()
 
-	gomysql.Write(GetTimeStampForSYNC(), imei, rev_buf)
+	//gomysql.Write(GetTimeStampForSYNC(), imei, rev_buf)
 
 	//gomysql.Read(imei)
 
@@ -178,10 +178,10 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 		return
 	}
 
-	if send_test == 1 {
+	if send_test == 0 {
 		send_test = 1
 		SerialNum++
-		buf := fmt.Sprintf("S168#%s#%s#0009#GSENSOR,1$", imei, BDYString.Int2HexString(SerialNum))
+		buf := fmt.Sprintf("S168#%s#%s#0007#FIRST,1$", imei, BDYString.Int2HexString(SerialNum))
 		fmt.Println("send data: ", buf)
 		_, err = conn.Write([]byte(buf))
 	}
