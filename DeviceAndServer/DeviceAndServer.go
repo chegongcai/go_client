@@ -182,7 +182,7 @@ func ParseDeviceProtocol(rev_buf string, conn net.Conn) {
 	if send_test == 0 {
 		send_test = 1
 		SerialNum++
-		buf := fmt.Sprintf("S168#%s#%s#0009#UP,180,60$", imei, BDYString.Int2HexString(SerialNum))
+		buf := fmt.Sprintf("S168#%s#%s#0007#ALERT,0$", imei, BDYString.Int2HexString(SerialNum))
 		fmt.Println("send data to device: ", buf)
 		_, err = conn.Write([]byte(buf))
 	}
