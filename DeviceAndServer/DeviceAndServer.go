@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go_client/BDYString"
 	"go_client/ClientAndServer"
-	"go_client/HeartBeat"
+	//"go_client/HeartBeat"
 	//"go_client/gomysql"
 	"go_client/sessionmap"
 	"net"
@@ -57,16 +57,18 @@ func DeviceAndServerConn(conn net.Conn) {
 		fmt.Println("device ip: ", rAddr.String())
 		fmt.Println("time: ", BDYString.GetTimeStamp())
 		fmt.Println("rev data: ", string(buf[0:n]))
-		if buf[n-1] != '$' {
-			return
-		}
-		data_hb := buf[:n]
-		message := make(chan byte)
-		go HeartBeat.GetMessage(data_hb, message)
-		go HeartBeat.HeartBeat(conn, message, 60)
+		/*
+			if buf[n-1] != '$' {
+				return
+			}
+			data_hb := buf[:n]
+			message := make(chan byte)
+			go HeartBeat.GetMessage(data_hb, message)
+			go HeartBeat.HeartBeat(conn, message, 60)
 
-		rev_buf := string(buf[0 : n-1])    //delete the tail #
-		ParseDeviceProtocol(rev_buf, conn) //do protocol parse
+			rev_buf := string(buf[0 : n-1])    //delete the tail #
+			ParseDeviceProtocol(rev_buf, conn) //do protocol parse
+		*/
 	}
 }
 
